@@ -40,3 +40,14 @@ services:
       - ..:/code:delegated
       - ~/.m2:/root/.m2:delegated
     entrypoint: /bin/bash
+
+  cross-compile-runtime-setup:
+    image: netty:crosscompile
+    build:
+      context: .
+      dockerfile: Dockerfile.cross_compile
+
+  cross-compile:
+    image: netty:crosscompile
+    depends_on: [cross-compile-runtime-setup]
+    command: /bin/bash -cl "mvn clean install -Plinux-aarch64 -DskipTests"

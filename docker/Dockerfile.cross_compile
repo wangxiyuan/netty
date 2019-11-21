@@ -1,0 +1,39 @@
+#
+# Copyright 2019 The Netty Project
+#
+# The Netty Project licenses this file to you under the Apache License,
+# version 2.0 (the "License"); you may not use this file except in compliance
+# with the License. You may obtain a copy of the License at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+FROM centos:7.6.1810
+
+# Install requirements
+RUN yum install -y wget tar git make redhat-lsb-core autoconf automake libtool glibc-devel libaio-devel openssl-devel apr-devel lksctp-tools
+
+# Install Java
+RUN yum install -y java-1.8.0-openjdk-devel
+
+# Install aarch64 gcc toolchain
+RUN set -x && \
+  wget https://releases.linaro.org/components/toolchain/binaries/4.9-2016.02/aarch64-linux-gnu/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu.tar.xz && \
+  tar xvf gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu.tar.xz
+
+# Install Maven
+RUN set -x && \
+  wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo && \
+  yum install -y apache-maven
+
+ENV PATH="/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:${PATH}"
+ENV JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk/"
+
+# Get Netty source
+RUN set -x && \
+  git clone https://github.com/netty/netty
